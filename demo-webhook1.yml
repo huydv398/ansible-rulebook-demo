@@ -12,5 +12,5 @@
       condition: event.payload.message == "Hello EDA"
       action:
         run_job_template:
-          name: get-info-datacenter-vlware
+          name: get-info-datacenter-vlware # Ten cua template tren AWX server
           organization: Default
