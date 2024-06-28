@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt-get update
 sudo apt-get install python3-pip
 
 apt update && apt install -y build-essential maven  vim curl openjdk-17-jdk python3-dev python3-pip
