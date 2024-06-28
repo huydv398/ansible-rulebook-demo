@@ -7,11 +7,8 @@
   #   user_to: #khai báo các địa chi cần gửi thông tin đến
   #     - huydv1@suncloud.vn     
   tasks:
-  - name: Ensure podman, podman plugins, and java are installed
-    ansible.builtin.apt:
-      name:
-        - openjdk-11-jdk
-      state: present
+  - name: Install openjdk
+    ansible.builtin.command: sudo apt install openjdk-11-jdk -y
 
   - name: Open Firewalld for Kafka
     ansible.posix.firewalld:
