@@ -1,0 +1,6 @@
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+    kafka:
+      ansible_host: 172.16.66.136

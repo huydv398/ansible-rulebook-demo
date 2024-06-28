@@ -1,0 +1,73 @@
+---
+- name: Install kafka in Ubuntu22
+  hosts: kafka
+  # vars_files:
+  # - /root/ansible-rolebook/netbox/inventory/group_vars/all/01-notify.yml
+  # vars:
+  #   user_to: #khai báo các địa chi cần gửi thông tin đến
+  #     - huydv1@suncloud.vn     
+  tasks:
+  - name: Ensure podman, podman plugins, and java are installed
+    ansible.builtin.apt:
+      name:
+        - install openjdk-11-jdk
+      state: present
+
+  - name: Open Firewalld for Kafka
+    ansible.posix.firewalld:
+      port: 9092/tcp
+      permanent: true
+      state: enabled
+    notify: Restart Firewalld
+
+  - name: Open Firewalld for ZooKeeper
+    ansible.posix.firewalld:
+      port: 2181/tcp
+      permanent: true
+      state: enabled
+    notify: Restart Firewalld
+
+  - name: Force all notified handlers to run at this point
+    ansible.builtin.meta: flush_handlers
+
+  - name: Extract kafka tar
+    ansible.builtin.unarchive:
+      src: "https://downloads.apache.org/kafka/3.7.0/kafka_2.12-3.7.0.tgz"
+      dest: /opt/kafka
+      remote_src: true
+
+  - name: Template a file to /etc/file.conf
+    ansible.builtin.template:
+      src: templates/kafka.service.j2
+      dest: etc/systemd/system/zookeeper.service
+      mode: '0644'
+
+  - name: Start the ZooKeeper
+    - name: Make sure a service unit is running
+      ansible.builtin.systemd_service:
+        state: restarted
+        daemon_reload: true
+        name: crond
+        
+  - name: Template a file to /etc/file.conf
+    ansible.builtin.template:
+      src: templates/kafka.service.j2
+      dest: /etc/systemd/system/kafka.service
+      mode: '0644'
+
+  - name: Start the Kafka
+    ansible.builtin.systemd_service:
+      state: started
+      name: kafka
+
+
+  - name: Create Kafka topic
+    ansible.builtin.command: /opt/kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic {{ topic
+      }}
+    register: kafkatopic
+    changed_when: kafkatopic.stdout == "Created topic " ~ topic ~ "."
+    failed_when:
+      - '"already exists" not in kafkatopic.stderr'
+      - kafkatopic.stdout != "Created topic " ~ topic ~ "."
+    tags:
+      - createtopic
