@@ -10,7 +10,7 @@
   - name: Ensure podman, podman plugins, and java are installed
     ansible.builtin.apt:
       name:
-        - install openjdk-11-jdk
+        - openjdk-11-jdk
       state: present
 
   - name: Open Firewalld for Kafka
