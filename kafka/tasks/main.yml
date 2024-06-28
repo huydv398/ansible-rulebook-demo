@@ -8,7 +8,7 @@
   #     - huydv1@suncloud.vn     
   tasks:
   - name: Install openjdk
-    ansible.builtin.command: sudo apt install openjdk-11-jdk -y
+    ansible.builtin.command: sudo apt install update
 
   - name: Open Firewalld for Kafka
     ansible.posix.firewalld:
